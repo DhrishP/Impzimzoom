@@ -7,6 +7,8 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Label } from "@/components/ui/label"
+import { useData } from "@/contexts/DataContext"
+import { useToast } from "@/hooks/use-toast"
 
 export function CreateDescriptionDialog({
   open,
@@ -15,14 +17,35 @@ export function CreateDescriptionDialog({
   open: boolean
   onOpenChange: (open: boolean) => void
 }) {
-  const [title, setTitle] = useState("")
-  const [content, setContent] = useState("")
-  const [category, setCategory] = useState("")
+  const { addData } = useData()
+  const { toast } = useToast()
+  const [loading, setLoading] = useState(false)
+  const [formData, setFormData] = useState({
+    title: "",
+    content: "",
+    category: "",
+  })
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    // TODO: Implement description creation
-    onOpenChange(false)
+    setLoading(true)
+
+    try {
+      await addData("descriptions", formData)
+      toast({
+        title: "Success",
+        description: "Description created successfully",
+      })
+      onOpenChange(false)
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to create description",
+        variant: "destructive",
+      })
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -36,14 +59,19 @@ export function CreateDescriptionDialog({
             <Label htmlFor="title">Title</Label>
             <Input
               id="title"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
+              value={formData.title}
+              onChange={(e) => setFormData({ ...formData, title: e.target.value })}
               placeholder="Enter description title"
+              required
             />
           </div>
           <div className="space-y-2">
             <Label htmlFor="category">Category</Label>
-            <Select value={category} onValueChange={setCategory}>
+            <Select
+              value={formData.category}
+              onValueChange={(value) => setFormData({ ...formData, category: value })}
+              required
+            >
               <SelectTrigger>
                 <SelectValue placeholder="Select category" />
               </SelectTrigger>
@@ -58,14 +86,17 @@ export function CreateDescriptionDialog({
             <Label htmlFor="content">Content</Label>
             <Textarea
               id="content"
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
+              value={formData.content}
+              onChange={(e) => setFormData({ ...formData, content: e.target.value })}
               placeholder="Write your description..."
               className="h-[200px]"
+              required
             />
           </div>
           <DialogFooter>
-            <Button type="submit">Create Description</Button>
+            <Button type="submit" disabled={loading}>
+              {loading ? "Creating..." : "Create Description"}
+            </Button>
           </DialogFooter>
         </form>
       </DialogContent>
