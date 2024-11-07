@@ -4,8 +4,10 @@ import { useState } from "react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
-import { Eye, EyeOff } from "lucide-react"
+import { useData } from "@/contexts/DataContext"
+import { useToast } from "@/hooks/use-toast"
 
 export function CreateCredentialDialog({
   open,
@@ -14,76 +16,100 @@ export function CreateCredentialDialog({
   open: boolean
   onOpenChange: (open: boolean) => void
 }) {
-  const [title, setTitle] = useState("")
-  const [username, setUsername] = useState("")
-  const [password, setPassword] = useState("")
-  const [url, setUrl] = useState("")
-  const [showPassword, setShowPassword] = useState(false)
+  const { addData } = useData()
+  const { toast } = useToast()
+  const [loading, setLoading] = useState(false)
+  const [formData, setFormData] = useState({
+    title: "",
+    username: "",
+    password: "",
+    url: "",
+    notes: "",
+  })
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    // TODO: Implement credential creation
-    onOpenChange(false)
+    setLoading(true)
+
+    try {
+      await addData("credentials", formData)
+      toast({
+        title: "Success",
+        description: "Credential created successfully",
+      })
+      onOpenChange(false)
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to create credential",
+        variant: "destructive",
+      })
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[525px]">
+      <DialogContent>
         <DialogHeader>
-          <DialogTitle>Add Credential</DialogTitle>
+          <DialogTitle>Add New Credential</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="title">Title</Label>
             <Input
               id="title"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="e.g., GitHub Account"
+              value={formData.title}
+              onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+              placeholder="Enter credential title"
+              required
             />
           </div>
           <div className="space-y-2">
             <Label htmlFor="username">Username</Label>
             <Input
               id="username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              value={formData.username}
+              onChange={(e) => setFormData({ ...formData, username: e.target.value })}
               placeholder="Enter username"
+              required
             />
           </div>
           <div className="space-y-2">
             <Label htmlFor="password">Password</Label>
-            <div className="relative">
-              <Input
-                id="password"
-                type={showPassword ? "text" : "password"}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Enter password"
-              />
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                className="absolute right-2 top-1/2 -translate-y-1/2"
-                onClick={() => setShowPassword(!showPassword)}
-              >
-                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-              </Button>
-            </div>
+            <Input
+              id="password"
+              type="password"
+              value={formData.password}
+              onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+              placeholder="Enter password"
+              required
+            />
           </div>
           <div className="space-y-2">
             <Label htmlFor="url">URL (optional)</Label>
             <Input
               id="url"
               type="url"
-              value={url}
-              onChange={(e) => setUrl(e.target.value)}
-              placeholder="https://example.com"
+              value={formData.url}
+              onChange={(e) => setFormData({ ...formData, url: e.target.value })}
+              placeholder="Enter URL"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="notes">Notes (optional)</Label>
+            <Textarea
+              id="notes"
+              value={formData.notes}
+              onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+              placeholder="Enter notes"
             />
           </div>
           <DialogFooter>
-            <Button type="submit">Save Credential</Button>
+            <Button type="submit" disabled={loading}>
+              {loading ? "Creating..." : "Create Credential"}
+            </Button>
           </DialogFooter>
         </form>
       </DialogContent>
