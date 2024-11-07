@@ -6,9 +6,11 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { DescriptionList } from "@/components/descriptions/description-list"
 import { CreateDescriptionDialog } from "@/components/descriptions/create-description-dialog"
+import { useData } from "@/contexts/DataContext"
 
 export default function DescriptionsPage() {
   const [open, setOpen] = useState(false)
+  const {searchTerms,setSearchTerm} = useData()
   
   return (
     <div className="h-full p-8">
@@ -24,9 +26,14 @@ export default function DescriptionsPage() {
       </div>
       
       <div className="relative mb-6">
-        <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-        <Input placeholder="Search descriptions..." className="pl-10" />
-      </div>
+  <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+  <Input 
+    placeholder="Search descriptions..." 
+    className="pl-10"
+    value={searchTerms.descriptions}
+    onChange={(e) => setSearchTerm("descriptions", e.target.value)}
+  />
+</div>
       
       <DescriptionList />
       <CreateDescriptionDialog open={open} onOpenChange={setOpen} />

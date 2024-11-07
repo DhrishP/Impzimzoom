@@ -6,9 +6,11 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { EmailList } from "@/components/emails/email-list"
 import { CreateEmailDialog } from "@/components/emails/create-email-dialog"
+import { useData } from "@/contexts/DataContext"
 
 export default function EmailsPage() {
   const [open, setOpen] = useState(false)
+  const { searchTerms, setSearchTerm } = useData()
   
   return (
     <div className="h-full p-8">
@@ -25,10 +27,15 @@ export default function EmailsPage() {
       
       <div className="relative mb-6">
         <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-        <Input placeholder="Search templates..." className="pl-10" />
+        <Input 
+          placeholder="Search templates..." 
+          className="pl-10"
+          value={searchTerms.emails}
+          onChange={(e) => setSearchTerm("emails", e.target.value)}
+        />
       </div>
       
-      <EmailList />
+      <EmailList  />
       <CreateEmailDialog open={open} onOpenChange={setOpen} />
     </div>
   )
