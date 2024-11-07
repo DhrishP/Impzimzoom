@@ -12,6 +12,8 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { CalendarIcon } from "lucide-react"
 import { format } from "date-fns"
 import { cn } from "@/lib/utils"
+import { useData } from "@/contexts/DataContext"
+import { useToast } from "@/hooks/use-toast"
 
 export function CreateTaskDialog({
   open,
@@ -20,15 +22,39 @@ export function CreateTaskDialog({
   open: boolean
   onOpenChange: (open: boolean) => void
 }) {
-  const [title, setTitle] = useState("")
-  const [description, setDescription] = useState("")
-  const [priority, setPriority] = useState("")
-  const [date, setDate] = useState<Date>()
+  const { addData } = useData()
+  const { toast } = useToast()
+  const [loading, setLoading] = useState(false)
+  const [formData, setFormData] = useState({
+    title: "",
+    description: "",
+    priority: "",
+    dueDate: null as Date | null,
+  })
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    // TODO: Implement task creation
-    onOpenChange(false)
+    setLoading(true)
+
+    try {
+      await addData("tasks", {
+        ...formData,
+        status: "TODO",
+      })
+      toast({
+        title: "Success",
+        description: "Task created successfully",
+      })
+      onOpenChange(false)
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to create task",
+        variant: "destructive",
+      })
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -42,23 +68,29 @@ export function CreateTaskDialog({
             <Label htmlFor="title">Title</Label>
             <Input
               id="title"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
+              value={formData.title}
+              onChange={(e) => setFormData({ ...formData, title: e.target.value })}
               placeholder="Enter task title"
+              required
             />
           </div>
           <div className="space-y-2">
             <Label htmlFor="description">Description</Label>
             <Textarea
               id="description"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
+              value={formData.description}
+              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
               placeholder="Enter task description"
+              required
             />
           </div>
           <div className="space-y-2">
             <Label htmlFor="priority">Priority</Label>
-            <Select value={priority} onValueChange={setPriority}>
+            <Select
+              value={formData.priority}
+              onValueChange={(value) => setFormData({ ...formData, priority: value })}
+              required
+            >
               <SelectTrigger>
                 <SelectValue placeholder="Select priority" />
               </SelectTrigger>
@@ -77,25 +109,27 @@ export function CreateTaskDialog({
                   variant="outline"
                   className={cn(
                     "w-full justify-start text-left font-normal",
-                    !date && "text-muted-foreground"
+                    !formData.dueDate && "text-muted-foreground"
                   )}
                 >
                   <CalendarIcon className="mr-2 h-4 w-4" />
-                  {date ? format(date, "PPP") : <span>Pick a date</span>}
+                  {formData.dueDate ? format(formData.dueDate, "PPP") : <span>Pick a date</span>}
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0">
                 <Calendar
                   mode="single"
-                  selected={date}
-                  onSelect={setDate}
+                  selected={formData.dueDate ?? undefined}
+                  onSelect={(date) => setFormData({ ...formData, dueDate: date ?? null })}
                   initialFocus
                 />
               </PopoverContent>
             </Popover>
           </div>
           <DialogFooter>
-            <Button type="submit">Create Task</Button>
+            <Button type="submit" disabled={loading}>
+              {loading ? "Creating task..." : "Create Task"}
+            </Button>
           </DialogFooter>
         </form>
       </DialogContent>
