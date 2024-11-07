@@ -1,5 +1,5 @@
 import { Card } from "@/components/ui/card"
-import { Mail, KeyRound, FileText, CheckSquare } from 'lucide-react'
+import { Mail, KeyRound, FileText, CheckSquare , Snowflake } from 'lucide-react'
 import Link from 'next/link'
 import { cn } from "@/lib/utils"
 
@@ -32,6 +32,13 @@ export default function Home() {
       description: "Manage your tasks and stay organized",
       href: "/tasks",
       color: "text-orange-700"
+    },
+    {
+      icon: Snowflake,
+      title: "Cold Email",
+      description: "Generate and send cold emails",
+      href: "/cold-emails",
+      color: "text-blue-500"
     }
   ]
 
