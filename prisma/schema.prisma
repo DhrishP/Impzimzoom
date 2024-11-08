@@ -15,6 +15,7 @@ datasource db {
 
 model EmailTemplate {
   id          String   @id @default(cuid())
+  userId      String
   title       String
   content     String
   category    String
@@ -24,6 +25,7 @@ model EmailTemplate {
 
 model Credential {
   id          String   @id @default(cuid())
+  userId      String
   title       String
   username    String
   password    String
@@ -35,6 +37,7 @@ model Credential {
 
 model Description {
   id          String   @id @default(cuid())
+  userId      String
   title       String
   content     String
   category    String
@@ -44,6 +47,7 @@ model Description {
 
 model Task {
   id          String   @id @default(cuid())
+  userId      String
   title       String
   description String?
   status      String   @default("TODO")
