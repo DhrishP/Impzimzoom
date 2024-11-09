@@ -47,27 +47,3 @@ export async function POST(request: Request) {
   }
 }
 
-export async function DELETE(request: Request) {
-  const { userId } = await auth();
-  if (!userId) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-  const data = await request.json();
-  const description = await prisma.description.delete({
-    where: { id: data.id, userId: userId },
-  });
-  return NextResponse.json(description);
-}
-
-export async function PATCH(request: Request) {
-  const { userId } = await auth();
-  if (!userId) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-  const data = await request.json();
-  const description = await prisma.description.update({
-    where: { id: data.id, userId: userId },
-    data: data,
-  });
-  return NextResponse.json(description);
-}
