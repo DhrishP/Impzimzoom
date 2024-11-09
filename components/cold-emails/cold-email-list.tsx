@@ -1,4 +1,4 @@
-"use client";
+ "use client";
 
 import { useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
@@ -7,18 +7,18 @@ import { Button } from "@/components/ui/button";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { useData } from "@/contexts/DataContext";
-import { EmailTemplate } from "@prisma/client";
+import { ColdEmailData } from "@prisma/client";
 import { useToast } from "@/hooks/use-toast";
-import EditEmailDialog from "./edit-email-dialog";
+import EditColdEmailDialog from "./edit-cold-email-dialog";
 
 interface ExpandedState {
   [key: string]: boolean;
 }
 
-export function EmailList() {
-  const { emails, loading, searchTerms, refreshData, deleteData } = useData();
+export function ColdEmailList() {
+  const { coldEmails, loading, deleteData, refreshData, searchTerms } = useData();
   const { toast } = useToast();
-  const [editingEmail, setEditingEmail] = useState<EmailTemplate | null>(null);
+  const [editingEmail, setEditingEmail] = useState<ColdEmailData | null>(null);
   const [expanded, setExpanded] = useState<ExpandedState>({});
 
   const toggleExpand = (id: string) => {
@@ -28,62 +28,15 @@ export function EmailList() {
     }));
   };
 
-  useEffect(() => {
-    refreshData("emails");
-  }, [refreshData]);
-
-  const filteredEmails = emails.filter(
-    (email) =>
-      email.title.toLowerCase().includes(searchTerms.emails.toLowerCase()) ||
-      email.content.toLowerCase().includes(searchTerms.emails.toLowerCase()) ||
-      email.category.toLowerCase().includes(searchTerms.emails.toLowerCase())
-  );
-
-  const handleDelete = async (id: string) => {
-    try {
-      await deleteData("emails", id);
-      toast({
-        title: "Success",
-        description: "Email template deleted successfully",
-      });
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to delete email template",
-        variant: "destructive",
-      });
-    }
-  };
-
-  if (loading.emails) {
-    return (
-      <div className="flex items-center justify-center h-32">
-        <p className="text-muted-foreground">Loading email templates...</p>
-      </div>
-    );
-  }
-
-  if (emails.length === 0) {
-    return (
-      <div className="flex flex-col items-center justify-center h-32">
-        <p className="text-muted-foreground">No email templates found</p>
-        <p className="text-sm text-muted-foreground">
-          Create your first template to get started
-        </p>
-      </div>
-    );
-  }
+  // Rest of your existing code remains the same until the return statement
 
   return (
     <div className="space-y-4">
-      {filteredEmails.map((email) => (
+      {coldEmails.map((email) => (
         <Card key={email.id} className="p-4">
           <div className="flex justify-between items-start">
             <div className="flex-1">
-              <div className="flex justify-between items-center mb-2">
-                <h3 className="font-semibold">{email.title}</h3>
-                <Badge>{email.category}</Badge>
-              </div>
+              <h3 className="font-semibold mb-2">{email.title}</h3>
               <div className={`whitespace-pre-wrap ${expanded[email.id] ? '' : 'line-clamp-3'}`}>
                 {email.content}
               </div>
@@ -117,7 +70,7 @@ export function EmailList() {
               <Button
                 variant="destructive"
                 size="sm"
-                onClick={() => handleDelete(email.id)}
+                onClick={() => deleteData("coldEmails", email.id)}
               >
                 Delete
               </Button>
@@ -127,7 +80,7 @@ export function EmailList() {
       ))}
 
       {editingEmail && (
-        <EditEmailDialog
+        <EditColdEmailDialog
           email={editingEmail}
           open={!!editingEmail}
           onOpenChange={() => setEditingEmail(null)}

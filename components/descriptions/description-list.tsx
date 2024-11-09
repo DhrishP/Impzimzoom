@@ -4,17 +4,22 @@ import { useEffect, useState } from "react"
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Pencil, Trash2 } from "lucide-react"
+import { Pencil, Trash2, ChevronDown, ChevronUp } from "lucide-react"
 import { formatDistanceToNow } from "date-fns"
 import { useData } from "@/contexts/DataContext"
 import { useToast } from "@/hooks/use-toast"
 import { Description } from "@prisma/client"
 import EditDescriptionDialog from "./edit-description-dialog"
 
+interface ExpandedState {
+  [key: string]: boolean;
+}
+
 export function DescriptionList() {
   const { descriptions, loading, refreshData, deleteData, searchTerms } = useData()
   const { toast } = useToast()
   const [editingDescription, setEditingDescription] = useState<Description | null>(null)
+  const [expanded, setExpanded] = useState<ExpandedState>({})
 
   useEffect(() => {
     refreshData('descriptions')
@@ -42,6 +47,13 @@ export function DescriptionList() {
     description.category.toLowerCase().includes(searchTerms.descriptions.toLowerCase())
   )
 
+  const toggleExpand = (id: string) => {
+    setExpanded(prev => ({
+      ...prev,
+      [id]: !prev[id]
+    }));
+  };
+
   if (loading.descriptions) {
     return <div>Loading descriptions...</div>
   }
@@ -52,11 +64,33 @@ export function DescriptionList() {
         <Card key={description.id} className="p-4 hover:shadow-md transition">
           <div className="flex items-start justify-between">
             <div className="flex-1">
-              <h3 className="font-semibold mb-2">{description.title}</h3>
-              <p className="text-sm text-muted-foreground line-clamp-3">{description.content}</p>
+              <div className="flex justify-between items-center mb-2">
+                <h3 className="font-semibold">{description.title}</h3>
+                <Badge>{description.category}</Badge>
+              </div>
+              <div className={`whitespace-pre-wrap ${expanded[description.id] ? '' : 'line-clamp-3'}`}>
+                {description.content}
+              </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => toggleExpand(description.id)}
+                className="mt-2"
+              >
+                {expanded[description.id] ? (
+                  <>
+                    <ChevronUp className="h-4 w-4 mr-2" />
+                    Show Less
+                  </>
+                ) : (
+                  <>
+                    <ChevronDown className="h-4 w-4 mr-2" />
+                    Read More
+                  </>
+                )}
+              </Button>
             </div>
             <div className="flex items-start gap-2 ml-4">
-              <Badge>{description.category}</Badge>
               <Button
                 variant="ghost"
                 size="icon"
