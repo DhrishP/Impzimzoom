@@ -14,6 +14,10 @@ export default function TasksPage() {
   const [showFilters, setShowFilters] = useState(false);
   const { searchTerms, setSearchTerm } = useData();
 
+  const handleFilterChange = (type: 'priority' | 'dueDate', value: string) => {
+    setShowFilters(true);
+  };
+
   return (
     <div className="h-full p-8">
       <div className="flex justify-between items-center mb-8">
@@ -45,7 +49,7 @@ export default function TasksPage() {
           value={searchTerms.tasks}
           onChange={(e) => setSearchTerm("tasks", e.target.value)}
         />
-        {showFilters && <TaskFilters />}
+        {showFilters && <TaskFilters onFilterChange={handleFilterChange} />}
       </div>
 
       <TaskBoard />

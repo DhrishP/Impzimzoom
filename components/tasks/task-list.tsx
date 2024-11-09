@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { Card } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
+import { Badge, BadgeProps } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Pencil, Trash2, Calendar } from "lucide-react"
 import { formatDistanceToNow, format } from "date-fns"
@@ -60,10 +60,10 @@ export function TaskList() {
             <div className="flex-1">
               <div className="flex items-center gap-2 mb-2">
                 <h3 className="font-semibold">{task.title}</h3>
-                <Badge variant={priorityColors[task.priority as keyof typeof priorityColors]}>
+                <Badge variant={priorityColors[task.priority as keyof typeof priorityColors] as BadgeProps["variant"]}>
                   {task.priority}
                 </Badge>
-                <Badge variant={statusColors[task.status as keyof typeof statusColors]}>
+                <Badge variant={statusColors[task.status as keyof typeof statusColors] as BadgeProps["variant"]}>
                   {task.status}
                 </Badge>
               </div>
