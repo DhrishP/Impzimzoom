@@ -14,7 +14,7 @@ export default function TasksPage() {
   const [showFilters, setShowFilters] = useState(false);
   const { searchTerms, setSearchTerm } = useData();
 
-  const handleFilterChange = (type: 'priority' | 'dueDate', value: string) => {
+  const handleFilterChange = (type: "priority" | "dueDate", value: string) => {
     setShowFilters(true);
   };
 
