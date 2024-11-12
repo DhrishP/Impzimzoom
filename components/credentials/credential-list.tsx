@@ -12,7 +12,7 @@ import { useToast } from "@/hooks/use-toast";
 import { SecretKeyModal } from "@/components/credentials/secret-key-modal";
 
 export function CredentialList() {
-  const { credentials, loading, refreshData, searchTerms } = useData();
+  const { credentials = [], loading, refreshData, searchTerms } = useData();
   const [showSecretKeyModal, setShowSecretKeyModal] = useState(false);
   const [selectedCredential, setSelectedCredential] = useState<string | null>(
     null
@@ -23,21 +23,23 @@ export function CredentialList() {
   const { toast } = useToast();
 
   useEffect(() => {
-    refreshData("credentials");
+    if (typeof refreshData === 'function') {
+      refreshData("credentials");
+    }
   }, [refreshData]);
 
-  const filteredCredentials = credentials.filter(
+  const filteredCredentials = credentials?.filter(
     (credential) =>
-      credential.title
-        .toLowerCase()
-        .includes(searchTerms.credentials.toLowerCase()) ||
-      credential.username
-        .toLowerCase()
-        .includes(searchTerms.credentials.toLowerCase()) ||
-      credential.notes
+      credential?.title
         ?.toLowerCase()
-        .includes(searchTerms.credentials.toLowerCase())
-  );
+        ?.includes(searchTerms?.credentials?.toLowerCase() || '') ||
+      credential?.username
+        ?.toLowerCase()
+        ?.includes(searchTerms?.credentials?.toLowerCase() || '') ||
+      credential?.notes
+        ?.toLowerCase()
+        ?.includes(searchTerms?.credentials?.toLowerCase() || '')
+  ) || [];
 
   const handleShowPassword = (id: string) => {
     if (decryptedPasswords[id]) {
@@ -58,17 +60,26 @@ export function CredentialList() {
 
     try {
       const credential = credentials.find((c) => c.id === selectedCredential);
-      if (!credential) return;
+      if (!credential?.password || !secretKey) {
+        throw new Error("Missing password or secret key");
+      }
 
       const decryptedPassword = decryptPassword(credential.password, secretKey);
+      
+      // Verify the decrypted result is valid
+      if (!decryptedPassword) {
+        throw new Error("Decryption failed");
+      }
+
       setDecryptedPasswords((prev) => ({
         ...prev,
         [selectedCredential]: decryptedPassword,
       }));
     } catch (error) {
+      console.error('Decryption error:', error);  // Add logging
       toast({
-        title: "Error",
-        description: "Invalid secret key or corrupted password",
+        title: "Decryption Error",
+        description: "Failed to decrypt password. Please check your secret key.",
         variant: "destructive",
       });
     } finally {
