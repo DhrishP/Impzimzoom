@@ -66,7 +66,6 @@ export function CredentialList() {
 
       const decryptedPassword = decryptPassword(credential.password, secretKey);
       
-      // Verify the decrypted result is valid
       if (!decryptedPassword) {
         throw new Error("Decryption failed");
       }
