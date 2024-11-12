@@ -10,8 +10,9 @@ import { ClerkProvider } from "@clerk/nextjs";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Professional Todo App",
-  description: "Manage your professional content and tasks",
+  title: "ImpZimZoom",
+  description:
+    "Keep track of your important stuff fast like zimzoomly fast!!⚡",
 };
 
 export default function RootLayout({
