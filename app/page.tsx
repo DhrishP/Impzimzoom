@@ -1,5 +1,5 @@
 import { Card } from "@/components/ui/card"
-import { Mail, KeyRound, FileText, CheckSquare , Snowflake } from 'lucide-react'
+import { Mail, KeyRound, FileText, CheckSquare , Snowflake, Twitter } from 'lucide-react'
 import Link from 'next/link'
 import { cn } from "@/lib/utils"
 
@@ -38,6 +38,13 @@ export default function Home() {
       title: "Cold Email",
       description: "Generate and send cold emails",
       href: "/cold-emails",
+      color: "text-blue-500"
+    },
+    {
+      icon: Twitter,
+      title: "Twitter Bangers",
+      description: "Save your twitter bangers",
+      href: "/twitter-bangers",
       color: "text-blue-500"
     }
   ]
