@@ -2,7 +2,15 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Mail, KeyRound, FileText, CheckSquare, Settings, Snowflake } from "lucide-react";
+import {
+  Twitter,
+  Mail,
+  KeyRound,
+  FileText,
+  CheckSquare,
+  Settings,
+  Snowflake,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
@@ -36,6 +44,12 @@ const routes = [
     icon: Snowflake,
     href: "/cold-emails",
     color: "text-sky-500",
+  },
+  {
+    label: "Twitter Bangers",
+    icon: Twitter,
+    href: "/twitter-bangers",
+    color: "text-blue-500",
   },
 ];
 
