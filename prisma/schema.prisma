@@ -56,3 +56,32 @@ model Task {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
+
+model ColdEmailData {
+  id          String   @id @default(cuid())
+  userId      String
+  title       String
+  content     String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model SocialImportantUrl {
+  id          String   @id @default(cuid())
+  userId      String
+  url         String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model TwitterBanger {
+  id          String   @id @default(cuid())
+  userId      String
+  content     String
+  imageUrl    String?
+  category    String   @default("GENERAL")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+
