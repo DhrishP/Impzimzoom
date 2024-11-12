@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import Image from "next/image";
 
 const routes = [
   {
@@ -60,7 +61,7 @@ export function Sidebar() {
     <div className="space-y-4 py-4 flex flex-col h-full bg-gray-900 text-white">
       <div className="px-3 py-2 flex-1">
         <Link href="/" className="flex items-center pl-3 mb-14">
-          <h1 className="text-2xl font-bold">Professional Hub</h1>
+          <Image src="/logo.png" alt="Logo" width={200} height={200} />
         </Link>
         <div className="space-y-1">
           {routes.map((route) => (
