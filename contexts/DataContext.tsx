@@ -2,30 +2,63 @@
 
 import { createContext, useContext, useState, useCallback } from "react";
 import { fetchData, postData } from "@/lib/api-utils";
-import { EmailTemplate, Credential, Description, Task } from "@prisma/client";
+import {
+  EmailTemplate,
+  Credential,
+  Description,
+  Task,
+  ColdEmailData,
+  TwitterBanger,
+} from "@prisma/client";
 
 interface DataContextType {
   emails: EmailTemplate[];
   credentials: Credential[];
   descriptions: Description[];
   tasks: Task[];
+  coldEmails: ColdEmailData[];
+  twitterBangers: TwitterBanger[];
   loading: Record<string, boolean>;
   searchTerms: Record<string, string>;
   setSearchTerm: (type: string, term: string) => void;
   refreshData: (
-    type: "emails" | "credentials" | "descriptions" | "tasks"
+    type:
+      | "emails"
+      | "credentials"
+      | "descriptions"
+      | "tasks"
+      | "coldEmails"
+      | "twitterBangers"
   ) => Promise<void>;
   addData: (
-    type: "emails" | "credentials" | "descriptions" | "tasks",
+    type:
+      | "emails"
+      | "credentials"
+      | "descriptions"
+      | "tasks"
+      | "coldEmails"
+      | "twitterBangers",
     data: Partial<EmailTemplate | Credential | Description | Task>
   ) => Promise<void>;
   updateData: (
-    type: "emails" | "credentials" | "descriptions" | "tasks",
+    type:
+      | "emails"
+      | "credentials"
+      | "descriptions"
+      | "tasks"
+      | "coldEmails"
+      | "twitterBangers",
     id: string,
     data: Partial<EmailTemplate | Credential | Description | Task>
   ) => Promise<void>;
   deleteData: (
-    type: "emails" | "credentials" | "descriptions" | "tasks",
+    type:
+      | "emails"
+      | "credentials"
+      | "descriptions"
+      | "tasks"
+      | "coldEmails"
+      | "twitterBangers",
     id: string
   ) => Promise<void>;
 }
@@ -37,25 +70,39 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
   const [credentials, setCredentials] = useState<Credential[]>([]);
   const [descriptions, setDescriptions] = useState<Description[]>([]);
   const [tasks, setTasks] = useState<Task[]>([]);
+  const [coldEmails, setColdEmails] = useState<ColdEmailData[]>([]);
+  const [twitterBangers, setTwitterBangers] = useState<TwitterBanger[]>([]);
   const [loading, setLoading] = useState<Record<string, boolean>>({
     emails: false,
     credentials: false,
     descriptions: false,
     tasks: false,
+    coldEmails: false,
+    twitterBangers: false,
   });
   const [searchTerms, setSearchTerms] = useState<Record<string, string>>({
     emails: "",
     credentials: "",
     descriptions: "",
     tasks: "",
+    coldEmails: "",
+    twitterBangers: "",
   });
 
   const setSearchTerm = useCallback((type: string, term: string) => {
-    setSearchTerms(prev => ({ ...prev, [type]: term }));
+    setSearchTerms((prev) => ({ ...prev, [type]: term }));
   }, []);
 
   const refreshData = useCallback(
-    async (type: "emails" | "credentials" | "descriptions" | "tasks") => {
+    async (
+      type:
+        | "emails"
+        | "credentials"
+        | "descriptions"
+        | "tasks"
+        | "coldEmails"
+        | "twitterBangers"
+    ) => {
       try {
         setLoading((prev) => ({ ...prev, [type]: true }));
         const data = await fetchData(`/api/${type}`);
@@ -72,6 +119,12 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
           case "tasks":
             setTasks(data);
             break;
+          case "coldEmails":
+            setColdEmails(data);
+            break;
+          case "twitterBangers":
+            setTwitterBangers(data);
+            break;
         }
       } catch (error) {
         console.error(`Failed to refresh ${type}:`, error);
@@ -85,7 +138,13 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
 
   const addData = useCallback(
     async (
-      type: "emails" | "credentials" | "descriptions" | "tasks",
+      type:
+        | "emails"
+        | "credentials"
+        | "descriptions"
+        | "tasks"
+        | "coldEmails"
+        | "twitterBangers",
       data: Partial<EmailTemplate | Credential | Description | Task>
     ) => {
       try {
@@ -105,6 +164,12 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
           case "tasks":
             setTasks((prev) => [...prev, response as Task]);
             break;
+          case "coldEmails":
+            setColdEmails((prev) => [...prev, response as ColdEmailData]);
+            break;
+          case "twitterBangers":
+            setTwitterBangers((prev) => [...prev, response as TwitterBanger]);
+            break;
         }
 
         return response;
@@ -120,33 +185,57 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
 
   const updateData = useCallback(
     async (
-      type: "emails" | "credentials" | "descriptions" | "tasks",
+      type:
+        | "emails"
+        | "credentials"
+        | "descriptions"
+        | "tasks"
+        | "coldEmails"
+        | "twitterBangers",
       id: string,
       data: Partial<EmailTemplate | Credential | Description | Task>
     ) => {
       try {
         setLoading((prev) => ({ ...prev, [type]: true }));
         const response = await fetch(`/api/${type}/${id}`, {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify(data),
         });
-        
-        if (!response.ok) throw new Error('Failed to update');
-        
+
+        if (!response.ok) throw new Error("Failed to update");
+
         const updated = await response.json();
         switch (type) {
           case "emails":
-            setEmails(prev => prev.map(item => item.id === id ? updated : item));
+            setEmails((prev) =>
+              prev.map((item) => (item.id === id ? updated : item))
+            );
             break;
           case "credentials":
-            setCredentials(prev => prev.map(item => item.id === id ? updated : item));
+            setCredentials((prev) =>
+              prev.map((item) => (item.id === id ? updated : item))
+            );
             break;
           case "descriptions":
-            setDescriptions(prev => prev.map(item => item.id === id ? updated : item));
+            setDescriptions((prev) =>
+              prev.map((item) => (item.id === id ? updated : item))
+            );
             break;
           case "tasks":
-            setTasks(prev => prev.map(item => item.id === id ? updated : item));
+            setTasks((prev) =>
+              prev.map((item) => (item.id === id ? updated : item))
+            );
+            break;
+          case "coldEmails":
+            setColdEmails((prev) =>
+              prev.map((item) => (item.id === id ? updated : item))
+            );
+            break;
+          case "twitterBangers":
+            setTwitterBangers((prev) =>
+              prev.map((item) => (item.id === id ? updated : item))
+            );
             break;
         }
       } finally {
@@ -158,29 +247,41 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
 
   const deleteData = useCallback(
     async (
-      type: "emails" | "credentials" | "descriptions" | "tasks",
+      type:
+        | "emails"
+        | "credentials"
+        | "descriptions"
+        | "tasks"
+        | "coldEmails"
+        | "twitterBangers",
       id: string
     ) => {
       try {
         setLoading((prev) => ({ ...prev, [type]: true }));
         const response = await fetch(`/api/${type}/${id}`, {
-          method: 'DELETE',
+          method: "DELETE",
         });
-        
-        if (!response.ok) throw new Error('Failed to delete');
-        
+
+        if (!response.ok) throw new Error("Failed to delete");
+
         switch (type) {
           case "emails":
-            setEmails(prev => prev.filter(item => item.id !== id));
+            setEmails((prev) => prev.filter((item) => item.id !== id));
             break;
           case "credentials":
-            setCredentials(prev => prev.filter(item => item.id !== id));
+            setCredentials((prev) => prev.filter((item) => item.id !== id));
             break;
           case "descriptions":
-            setDescriptions(prev => prev.filter(item => item.id !== id));
+            setDescriptions((prev) => prev.filter((item) => item.id !== id));
             break;
           case "tasks":
-            setTasks(prev => prev.filter(item => item.id !== id));
+            setTasks((prev) => prev.filter((item) => item.id !== id));
+            break;
+          case "coldEmails":
+            setColdEmails((prev) => prev.filter((item) => item.id !== id));
+            break;
+          case "twitterBangers":
+            setTwitterBangers((prev) => prev.filter((item) => item.id !== id));
             break;
         }
       } finally {
@@ -204,6 +305,8 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
         addData,
         updateData,
         deleteData,
+        coldEmails,
+        twitterBangers,
       }}
     >
       {children}
