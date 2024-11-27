@@ -6,7 +6,6 @@ import { Badge } from "@/components/ui/badge";
 import { Eye, EyeOff, ExternalLink, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useData } from "@/contexts/DataContext";
-import { Credential } from "@prisma/client";
 import { decryptPassword } from "@/lib/encryption";
 import { useToast } from "@/hooks/use-toast";
 import { SecretKeyModal } from "@/components/credentials/secret-key-modal";
