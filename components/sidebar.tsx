@@ -17,7 +17,6 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import axios from "axios";
 
-
 export function Sidebar() {
   const routes = [
     {
@@ -90,19 +89,17 @@ export function Sidebar() {
       color: "text-sky-500",
     },
   ];
-  
-  
+
   const pathname = usePathname();
-  const [IsAdmin,SetIsAdmin] = useState(false)
+  const [IsAdmin, SetIsAdmin] = useState(false);
 
-
-  useEffect(()=>{
-   const getAdmin = async()=>{
-    const res = await axios.get('/api/isadmin')
-    SetIsAdmin(res.data.isAdmin)
-   }
-   getAdmin()
-    },[])
+  useEffect(() => {
+    const getAdmin = async () => {
+      const res = await axios.get("/api/isadmin");
+      SetIsAdmin(res.data.isAdmin);
+    };
+    getAdmin();
+  }, []);
 
   return (
     <div className="space-y-4 py-4 flex flex-col h-full bg-gray-900 text-white">
@@ -111,50 +108,51 @@ export function Sidebar() {
           <Image src="/logo.png" alt="Logo" width={200} height={200} />
         </Link>
         <div className="space-y-1">
-          {IsAdmin ? routes.map((route) => (
-            <Link
-              key={route.href}
-              href={route.href}
-              className={cn(
-                "text-sm group flex p-3 w-full justify-start font-medium cursor-pointer hover:text-white hover:bg-white/10 rounded-lg transition",
-                pathname === route.href
-                  ? "text-white bg-white/10"
-                  : "text-zinc-400"
-              )}
-            >
-              <div className="flex items-center flex-1">
-                <route.icon className={cn("h-5 w-5 mr-3", route.color)} />
-                {route.label}
-              </div>
-            </Link>
-          )) : noadminroutes.map((route) => (
-            <Link
-            key={route.href}
-            href={route.href}
-            className={cn(
-              "text-sm group flex p-3 w-full justify-start font-medium cursor-pointer hover:text-white hover:bg-white/10 rounded-lg transition",
-              pathname === route.href
-                ? "text-white bg-white/10"
-                : "text-zinc-400"
-            )}
-          >
-            <div className="flex items-center flex-1">
-              <route.icon className={cn("h-5 w-5 mr-3", route.color)} />
-              {route.label}
-            </div>
-          </Link>
-          ))}
+          {IsAdmin
+            ? routes.map((route) => (
+                <Link
+                  key={route.href}
+                  href={route.href}
+                  className={cn(
+                    "text-sm group flex p-3 w-full justify-start font-medium cursor-pointer hover:text-white hover:bg-white/10 rounded-lg transition",
+                    pathname === route.href
+                      ? "text-white bg-white/10"
+                      : "text-zinc-400"
+                  )}
+                >
+                  <div className="flex items-center flex-1">
+                    <route.icon className={cn("h-5 w-5 mr-3", route.color)} />
+                    {route.label}
+                  </div>
+                </Link>
+              ))
+            : noadminroutes.map((route) => (
+                <Link
+                  key={route.href}
+                  href={route.href}
+                  className={cn(
+                    "text-sm group flex p-3 w-full justify-start font-medium cursor-pointer hover:text-white hover:bg-white/10 rounded-lg transition",
+                    pathname === route.href
+                      ? "text-white bg-white/10"
+                      : "text-zinc-400"
+                  )}
+                >
+                  <div className="flex items-center flex-1">
+                    <route.icon className={cn("h-5 w-5 mr-3", route.color)} />
+                    {route.label}
+                  </div>
+                </Link>
+              ))}
         </div>
       </div>
       <div className="px-3 py-2">
-        <Button
-          variant="ghost"
-          size="icon"
-          className="w-full justify-start text-zinc-400 hover:text-white hover:bg-white/10"
+        <Link
+          href={"/settings"}
+          className="text-sm group flex p-3 w-full justify-start font-medium cursor-pointer hover:text-white hover:bg-white/10 rounded-lg transition"
         >
           <Settings className="h-5 w-5 mr-3" />
           Settings
-        </Button>
+        </Link>
       </div>
     </div>
   );
