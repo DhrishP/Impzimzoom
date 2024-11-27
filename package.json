@@ -77,6 +77,7 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
-    "@types/crypto-js": "^4.2.2"
+    "@types/crypto-js": "^4.2.2",
+    "axios": "^1.7.8"
   }
 }
