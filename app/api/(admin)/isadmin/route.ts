@@ -1,13 +1,12 @@
-import { useUser } from "@clerk/nextjs";
-import { auth } from "@clerk/nextjs/server";
+import { auth, currentUser } from "@clerk/nextjs/server";
 import { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
 
 export async function GET(request: NextRequest) {
-   const { isLoaded, isSignedIn, user } = useUser()
+   const user = await currentUser()
 
-   if (!isLoaded || !isSignedIn) {
+   if (!user) {
       return NextResponse.json({ isAdmin: false }, { status: 401 })
    }
 
