@@ -2,6 +2,7 @@ import { Card } from "@/components/ui/card"
 import { Mail, KeyRound, FileText, CheckSquare , Snowflake, Twitter } from 'lucide-react'
 import Link from 'next/link'
 import { cn } from "@/lib/utils"
+import { UserButton } from "@clerk/nextjs"
 
 export default function Home() {
   const features = [
@@ -51,6 +52,9 @@ export default function Home() {
 
   return (
     <div className="h-full p-8">
+      <div className="absolute top-4 right-4">
+        <UserButton />
+      </div>
       <div className="mb-8 space-y-4">
         <h2 className="text-2xl md:text-4xl font-bold text-center">
           Welcome to Your Personal Hub
