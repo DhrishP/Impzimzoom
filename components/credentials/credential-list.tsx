@@ -3,16 +3,24 @@
 import { useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Eye, EyeOff, ExternalLink } from "lucide-react";
+import { Eye, EyeOff, ExternalLink, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useData } from "@/contexts/DataContext";
 import { Credential } from "@prisma/client";
 import { decryptPassword } from "@/lib/encryption";
 import { useToast } from "@/hooks/use-toast";
 import { SecretKeyModal } from "@/components/credentials/secret-key-modal";
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 export function CredentialList() {
-  const { credentials = [], loading, refreshData, searchTerms } = useData();
+  const { credentials = [], loading, refreshData, searchTerms, deleteData } = useData();
   const [showSecretKeyModal, setShowSecretKeyModal] = useState(false);
   const [selectedCredential, setSelectedCredential] = useState<string | null>(
     null
@@ -21,6 +29,8 @@ export function CredentialList() {
     Record<string, string>
   >({});
   const { toast } = useToast();
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [credentialToDelete, setCredentialToDelete] = useState<string | null>(null);
 
   useEffect(() => {
     if (typeof refreshData === 'function') {
@@ -75,7 +85,7 @@ export function CredentialList() {
         [selectedCredential]: decryptedPassword,
       }));
     } catch (error) {
-      console.error('Decryption error:', error);  // Add logging
+      console.error('Decryption error:', error);
       toast({
         title: "Decryption Error",
         description: "Failed to decrypt password. Please check your secret key.",
@@ -84,6 +94,32 @@ export function CredentialList() {
     } finally {
       setShowSecretKeyModal(false);
       setSelectedCredential(null);
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    setCredentialToDelete(id);
+    setDeleteDialogOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!credentialToDelete) return;
+
+    try {
+      await deleteData("credentials", credentialToDelete);
+      toast({
+        title: "Success",
+        description: "Credential deleted successfully",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to delete credential",
+        variant: "destructive",
+      });
+    } finally {
+      setDeleteDialogOpen(false);
+      setCredentialToDelete(null);
     }
   };
 
@@ -120,16 +156,26 @@ export function CredentialList() {
                   </div>
                 </div>
               </div>
-              {credential.url && (
-                <a
-                  href={credential.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-blue-500 hover:text-blue-600"
+              <div className="flex items-center gap-2">
+                {credential.url && (
+                  <a
+                    href={credential.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-500 hover:text-blue-600"
+                  >
+                    <ExternalLink className="h-4 w-4" />
+                  </a>
+                )}
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => handleDelete(credential.id)}
+                  className="text-red-500 hover:text-red-600"
                 >
-                  <ExternalLink className="h-4 w-4" />
-                </a>
-              )}
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </div>
             </div>
             {credential.notes && (
               <p className="mt-2 text-sm text-muted-foreground">
@@ -139,6 +185,24 @@ export function CredentialList() {
           </Card>
         ))}
       </div>
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete the credential.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <Button variant="outline" onClick={() => setDeleteDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={confirmDelete}>
+              Delete
+            </Button>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
       <SecretKeyModal
         open={showSecretKeyModal}
         onOpenChange={setShowSecretKeyModal}
