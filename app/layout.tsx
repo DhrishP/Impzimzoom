@@ -6,6 +6,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Sidebar } from "@/components/sidebar";
 import { DataProvider } from "@/contexts/DataContext";
 import { ClerkProvider } from "@clerk/nextjs";
+import { KeyboardShortcutsProvider } from "@/components/keyboard-shortcuts-provider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -31,13 +32,15 @@ export default function RootLayout({
             disableTransitionOnChange
           >
             <DataProvider>
-              <div className="h-full relative">
-                <div className="hidden h-full md:flex md:w-72 md:flex-col md:fixed md:inset-y-0 z-80 bg-gray-900">
-                  <Sidebar />
+              <KeyboardShortcutsProvider>
+                <div className="h-full relative">
+                  <div className="hidden h-full md:flex md:w-72 md:flex-col md:fixed md:inset-y-0 z-80 bg-gray-900">
+                    <Sidebar />
+                  </div>
+                  <main className="md:pl-72">{children}</main>
                 </div>
-                <main className="md:pl-72">{children}</main>
-              </div>
-              <Toaster />
+                <Toaster />
+              </KeyboardShortcutsProvider>
             </DataProvider>
           </ThemeProvider>
         </body>
