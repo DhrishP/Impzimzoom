@@ -17,8 +17,8 @@ model EmailTemplate {
   id          String   @id @default(cuid())
   userId      String
   title       String
-  content     String
-  category    String
+  content     String   @default("")
+  category    String   
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
@@ -27,7 +27,7 @@ model Credential {
   id          String   @id @default(cuid())
   userId      String
   title       String
-  username    String
+  username    String   @default("")
   password    String
   url         String?
   notes       String?
@@ -39,8 +39,8 @@ model Description {
   id          String   @id @default(cuid())
   userId      String
   title       String
-  content     String
-  category    String
+  content     String   @default("")
+  category    String   
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
@@ -60,8 +60,8 @@ model Task {
 model ColdEmailData {
   id          String   @id @default(cuid())
   userId      String
-  title       String
-  content     String
+  title       String  
+  content     String   @default("")
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
@@ -77,7 +77,7 @@ model SocialImportantUrl {
 model TwitterBanger {
   id          String   @id @default(cuid())
   userId      String
-  content     String
+  content     String   @default("")
   imageUrl    String?
   category    String   @default("GENERAL")
   createdAt   DateTime @default(now())
