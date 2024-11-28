@@ -7,10 +7,19 @@ import { Button } from "@/components/ui/button"
 import { DescriptionList } from "@/components/descriptions/description-list"
 import { CreateDescriptionDialog } from "@/components/descriptions/create-description-dialog"
 import { useData } from "@/contexts/DataContext"
+import { useHotkeys } from "@/hooks/use-keyboard-shortcuts"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
 
 export default function DescriptionsPage() {
   const [open, setOpen] = useState(false)
-  const {searchTerms,setSearchTerm} = useData()
+const {searchTerms,setSearchTerm} = useData()
+  
+  useHotkeys(() => setOpen(true))
   
   return (
     <div className="h-full p-8">
@@ -19,10 +28,20 @@ export default function DescriptionsPage() {
           <h2 className="text-3xl font-bold">Descriptions</h2>
           <p className="text-muted-foreground">Store your professional descriptions and bios</p>
         </div>
-        <Button onClick={() => setOpen(true)}>
-          <Plus className="w-4 h-4 mr-2" />
-          Add Description
-        </Button>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button onClick={() => setOpen(true)}>
+                <Plus className="w-4 h-4 mr-2" />
+                Add Description
+                <span className="ml-2 text-xs text-muted-foreground">(Alt+N)</span>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Create new description (Alt+N)</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       </div>
       
       <div className="relative mb-6">
